@@ -6,16 +6,48 @@ import com.t2c.Concessionaire.exceptions.NotSupportedDataException;
 import java.util.Date;
 
 public class Car {
-    private int carId;
+    private Integer carId;
     private String brand;
     private double cost;
     private Date saleDate;
     private Date arrivalDate;
     private boolean sold;
     private String licensePlate;
-    private Concessionaire concessionaireId;
+    private Concessionaire concessionaire;
 
-    private void setCarId(int carId) {
+    public int getCarId() {
+        return carId;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public double getCost() {
+        return cost;
+    }
+
+    public Date getSaleDate() {
+        return saleDate;
+    }
+
+    public Date getArrivalDate() {
+        return arrivalDate;
+    }
+
+    public boolean isSold() {
+        return sold;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public Concessionaire getConcessionaire() {
+        return concessionaire;
+    }
+
+    private void setCarId(Integer carId) {
         this.carId = carId;
     }
 
@@ -48,8 +80,8 @@ public class Car {
         this.licensePlate = licensePlate;
     }
 
-    private void setConcessionaireId(Concessionaire concessionaireId) {
-        this.concessionaireId = concessionaireId;
+    private void setConcessionaire(Concessionaire concessionaire) {
+        this.concessionaire = concessionaire;
     }
 
     private Car(Builder builder) {
@@ -60,10 +92,10 @@ public class Car {
         this.setArrivalDate(builder.arrivalDate);
         this.setSold(builder.sold);
         this.setLicensePlate(builder.licensePlate);
-        this.setConcessionaireId(builder.concessionaire);
+        this.setConcessionaire(builder.concessionaire);
     }
-    public class Builder {
-        private int carId;
+    public static class Builder {
+        private Integer carId;
         private String brand;
         private Double cost;
         private Date saleDate;

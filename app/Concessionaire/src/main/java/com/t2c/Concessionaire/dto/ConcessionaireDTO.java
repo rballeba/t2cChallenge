@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ConcessionaireDTO {
     @JsonProperty("concessionaireId")
-    int concessionaireId;
+    Integer concessionaireId;
     @JsonProperty("address")
     String address;
 
-    public ConcessionaireDTO(int concessionaireId, String address) {
+    public ConcessionaireDTO(Integer concessionaireId, String address) {
         this.concessionaireId = concessionaireId;
         this.address = address;
     }

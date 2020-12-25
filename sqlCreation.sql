@@ -1,10 +1,10 @@
 CREATE TABLE concessionaires (
-    concessionaireId integer primary key,
+    concessionaireId serial primary key,
     address text unique not null
 );
 
 CREATE TABLE cars (
-    carId integer primary key,
+    carId serial primary key,
     brand text not null,
     cost real not null,
     saleDate timestamp not null,

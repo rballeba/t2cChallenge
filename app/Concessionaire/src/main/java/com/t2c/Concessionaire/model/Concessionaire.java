@@ -3,11 +3,19 @@ package com.t2c.Concessionaire.model;
 import com.t2c.Concessionaire.exceptions.NotSupportedDataException;
 
 public class Concessionaire {
-    private int concessionaireId;
+    private Integer concessionaireId;
     private String address;
     private Concessionaire(Builder builder) {
         this.setConcessionaireId(builder.concessionaireId);
         this.setAddress(builder.address);
+    }
+
+    public int getConcessionaireId() {
+        return concessionaireId;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
     private void setConcessionaireId(int concessionaireId) {
@@ -20,8 +28,8 @@ public class Concessionaire {
         this.address = address;
     }
 
-    public class Builder {
-        private int concessionaireId;
+    public static class Builder {
+        private Integer concessionaireId;
         private String address;
         public Builder withId(int concessionaireId) {
             this.concessionaireId = concessionaireId;
