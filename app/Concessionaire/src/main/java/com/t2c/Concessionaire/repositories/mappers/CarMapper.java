@@ -20,6 +20,8 @@ public class CarMapper implements RowMapper<Car> {
                 .withArrivalDate(resultSet.getDate("arrivalDate"))
                 .withSoldState(resultSet.getBoolean("sold"))
                 .withLicensePlate(resultSet.getString("licensePlate"));
+        if(resultSet.getObject("price") != null)
+            carBuilder.withPrice(resultSet.getDouble("price"));
         if(resultSet.getObject("concessionaireId") != null) {
             Concessionaire concessionaire = new Concessionaire.Builder()
                     .withId(resultSet.getInt("concessionaireId"))

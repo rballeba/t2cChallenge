@@ -2,7 +2,6 @@ package com.t2c.Concessionaire.repositories;
 
 import com.t2c.Concessionaire.exceptions.DatabaseConsistencyException;
 import com.t2c.Concessionaire.model.Car;
-import com.t2c.Concessionaire.model.Concessionaire;
 import com.t2c.Concessionaire.repositories.mappers.CarMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -34,6 +33,13 @@ public class CarRepository {
         String sql = "SELECT * FROM cars LEFT JOIN concessionaires ON concessionaires.concessionaireId = cars.concessionaireId";
         return namedJdbcTemplate.query(sql, carMapper);
     }
+    public List<Car> findAllByConcessionaire(int concessionaireId) {
+        String sql = "SELECT * FROM cars LEFT JOIN concessionaires ON concessionaires.concessionaireId = cars.concessionaireId " +
+                "WHERE concessionaires.concessionaireId = :concessionaireId";
+        Map<String, Object> argMap = new HashMap<>();
+        argMap.put("concessionaireId", concessionaireId);
+        return namedJdbcTemplate.query(sql, argMap, carMapper);
+    }
     public Optional<Car> findById(int carId) {
         String sql = "SELECT * FROM cars LEFT JOIN concessionaires ON concessionaires.concessionaireId = cars.concessionaireId " +
                 "WHERE cars.carId = :carId";
@@ -49,8 +55,8 @@ public class CarRepository {
 
     public void create(Car newCar) {
         String sql = "INSERT INTO cars (brand, cost, saleDate, arrivalDate, sold," +
-                "licensePlate, concessionaireId) VALUES (:brand, :cost, :saleDate, :arrivalDate," +
-                ":sold, :licensePlate, :concessionaireId)";
+                "licensePlate, concessionaireId, price) VALUES (:brand, :cost, :saleDate, :arrivalDate," +
+                ":sold, :licensePlate, :concessionaireId, :price)";
         Map<String, Object> argMap = new HashMap<>();
         argMap.put("brand", newCar.getBrand());
         argMap.put("cost", newCar.getCost());
@@ -58,6 +64,7 @@ public class CarRepository {
         argMap.put("arrivalDate", newCar.getArrivalDate());
         argMap.put("sold", newCar.isSold());
         argMap.put("licensePlate", newCar.getLicensePlate());
+        argMap.put("price", newCar.getPrice());
         Integer concessionaireId = (newCar.getConcessionaire() == null)? null: newCar.getConcessionaire().getConcessionaireId();
         argMap.put("concessionaireId", concessionaireId);
         namedJdbcTemplate.update(sql, argMap);
@@ -67,7 +74,7 @@ public class CarRepository {
         String sql = "UPDATE cars SET " +
                 "brand = :brand, cost = :cost, saleDate = :saleDate, arrivalDate = :arrivalDate," +
                 "sold = :sold, licensePlate = :licensePlate, concessionaireId = :concessionaireId " +
-                "WHERE carId = :carId";
+                "price = :price WHERE carId = :carId";
         Map<String, Object> argMap = new HashMap<>();
         argMap.put("brand", updatedCar.getBrand());
         argMap.put("cost", updatedCar.getCost());
@@ -75,6 +82,7 @@ public class CarRepository {
         argMap.put("arrivalDate", updatedCar.getArrivalDate());
         argMap.put("sold", updatedCar.isSold());
         argMap.put("licensePlate", updatedCar.getLicensePlate());
+        argMap.put("price", updatedCar.getPrice());
         Integer concessionaireId = (updatedCar.getConcessionaire() == null)? null: updatedCar.getConcessionaire().getConcessionaireId();
         argMap.put("concessionaireId", concessionaireId);
         argMap.put("carId", updatedCar.getCarId());

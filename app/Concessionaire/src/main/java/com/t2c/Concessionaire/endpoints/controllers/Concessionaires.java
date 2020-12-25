@@ -1,8 +1,10 @@
 package com.t2c.Concessionaire.endpoints.controllers;
 
 import com.t2c.Concessionaire.dto.ConcessionaireDTO;
+import com.t2c.Concessionaire.dto.ReportDTO;
 import com.t2c.Concessionaire.exceptions.EntityConsistencyError;
 import com.t2c.Concessionaire.exceptions.EntityNotFoundException;
+import com.t2c.Concessionaire.services.BenefitsService;
 import com.t2c.Concessionaire.services.ConcessionairesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +17,11 @@ import java.util.Optional;
 @RequestMapping("/concessionaires")
 public class Concessionaires {
     private ConcessionairesService concessionairesService;
+    private BenefitsService benefitsService;
     @Autowired
-    public Concessionaires(ConcessionairesService concessionairesService) {
+    public Concessionaires(ConcessionairesService concessionairesService, BenefitsService benefitsService) {
         this.concessionairesService = concessionairesService;
+        this.benefitsService = benefitsService;
     }
     @GetMapping("")
     public List<ConcessionaireDTO> getAllConcessionaires() {
@@ -49,4 +53,14 @@ public class Concessionaires {
         }
         return ResponseEntity.ok().build();
     }
+    @RequestMapping(value = "/{concessionaireId}/benefits", method = RequestMethod.GET)
+    public ResponseEntity<ReportDTO> getBenefitsReportForConcessionaire(
+            @PathVariable("concessionaireId") int concessionaireId) {
+        try {
+            return ResponseEntity.ok(benefitsService.getBenefitsOfConcessionaire(concessionaireId));
+        }catch (EntityNotFoundException entityNotFoundException) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

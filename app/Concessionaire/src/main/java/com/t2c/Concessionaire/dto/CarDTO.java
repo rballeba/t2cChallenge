@@ -25,10 +25,12 @@ public class CarDTO {
     public String licensePlate;
     @JsonProperty("concessionaireId")
     public Integer concessionaireId;
+    @JsonProperty("price")
+    public Double price;
 
     @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
     public CarDTO(Integer carId, String brand, double cost, Date saleDate, Date arrivalDate, boolean sold,
-                  String licensePlate, Integer concessionaireId) {
+                  String licensePlate, Integer concessionaireId, Double price) {
         this.carId = carId;
         this.brand = brand;
         this.cost = cost;
@@ -37,5 +39,6 @@ public class CarDTO {
         this.sold = sold;
         this.licensePlate = licensePlate;
         this.concessionaireId = concessionaireId;
+        this.price = price;
     }
 }

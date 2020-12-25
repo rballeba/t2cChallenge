@@ -14,6 +14,11 @@ public class Car {
     private boolean sold;
     private String licensePlate;
     private Concessionaire concessionaire;
+    private Double price;
+
+    public Double getPrice() {
+        return price;
+    }
 
     public int getCarId() {
         return carId;
@@ -49,6 +54,12 @@ public class Car {
 
     private void setCarId(Integer carId) {
         this.carId = carId;
+    }
+
+    private void setPrice(Double price) {
+        if(price < 0)
+            throw new NotSupportedDataException("The price can not be negative");
+        this.price = price;
     }
 
     private void setBrand(String brand) {
@@ -93,6 +104,7 @@ public class Car {
         this.setSold(builder.sold);
         this.setLicensePlate(builder.licensePlate);
         this.setConcessionaire(builder.concessionaire);
+        this.setPrice(builder.price);
     }
     public static class Builder {
         private Integer carId;
@@ -103,6 +115,7 @@ public class Car {
         private Boolean sold;
         private String licensePlate;
         private Concessionaire concessionaire;
+        private Double price;
         public Builder withId(int carId) {
             this.carId = carId;
             return this;
@@ -133,6 +146,10 @@ public class Car {
         }
         public Builder withConcessionaire(Concessionaire concessionaire) {
             this.concessionaire = concessionaire;
+            return this;
+        }
+        public Builder withPrice(double price) {
+            this.price = price;
             return this;
         }
         public Car build() throws BuildException {

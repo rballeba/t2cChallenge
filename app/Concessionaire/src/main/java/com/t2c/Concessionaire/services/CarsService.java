@@ -46,7 +46,8 @@ public class CarsService {
             throw new EntityConsistencyError();
         CarDTO updatedCarDTO = new CarDTO(carToUpdate.getCarId(), carToUpdate.getBrand(), carDTO.cost, carDTO.saleDate,
                 carToUpdate.getArrivalDate(), carDTO.sold, carDTO.licensePlate,
-                (carToUpdate.getConcessionaire() != null)?carToUpdate.getConcessionaire().getConcessionaireId():null);
+                (carToUpdate.getConcessionaire() != null)?carToUpdate.getConcessionaire().getConcessionaireId():null,
+                carToUpdate.getPrice());
         Car.Builder carBuilder = generateBuilderWithoutId(updatedCarDTO);
         carBuilder.withId(carDTO.carId);
         Car createdCar = carBuilder.build();
@@ -81,13 +82,13 @@ public class CarsService {
         Optional<Car> carOpt = carRepository.findById(carId);
         return carOpt.flatMap(car -> Optional.of(new CarDTO(car.getCarId(), car.getBrand(), car.getCost(),
                 car.getSaleDate(), car.getArrivalDate(), car.isSold(), car.getLicensePlate(),
-                (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null)
+                (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null, car.getPrice())
         ));
     }
     public List<CarDTO> findCars() {
         return carRepository.findAll().stream().map(car -> new CarDTO(car.getCarId(), car.getBrand(), car.getCost(),
                 car.getSaleDate(), car.getArrivalDate(), car.isSold(), car.getLicensePlate(),
-                (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null))
+                (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null, car.getPrice()))
                 .collect(Collectors.toList());
     }
     public List<CarDTO> findCarsOrderedByArrivalDate() {
@@ -95,7 +96,7 @@ public class CarsService {
         Collections.sort(cars, new CarArrivalDateComparator());
         return cars.stream().map(car -> new CarDTO(car.getCarId(), car.getBrand(), car.getCost(),
                 car.getSaleDate(), car.getArrivalDate(), car.isSold(), car.getLicensePlate(),
-                (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null))
+                (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null, car.getPrice()))
                 .collect(Collectors.toList());
     }
     public List<CarDTO> findCarsOrderedBySaleDate() {
@@ -103,7 +104,7 @@ public class CarsService {
         Collections.sort(cars, new CarSaleDateComparator());
         return cars.stream().map(car -> new CarDTO(car.getCarId(), car.getBrand(), car.getCost(),
                 car.getSaleDate(), car.getArrivalDate(), car.isSold(), car.getLicensePlate(),
-                (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null))
+                (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null, car.getPrice()))
                 .collect(Collectors.toList());
     }
 }
