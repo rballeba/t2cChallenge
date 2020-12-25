@@ -136,7 +136,7 @@ public class Car {
             return this;
         }
         public Car build() throws BuildException {
-            if(brand == null || cost == null || saleDate == null || arrivalDate == null || sold == null)
+            if(brand == null || cost == null || arrivalDate == null || sold == null)
                 throw new BuildException();
             else
                 return new Car(this);

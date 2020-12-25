@@ -7,7 +7,7 @@ CREATE TABLE cars (
     carId serial primary key,
     brand text not null,
     cost real not null,
-    saleDate timestamp not null,
+    saleDate timestamp,
     arrivalDate timestamp not null,
     sold boolean not null,
     licensePlate text,

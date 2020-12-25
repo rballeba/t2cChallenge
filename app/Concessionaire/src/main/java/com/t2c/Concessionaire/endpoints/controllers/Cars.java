@@ -20,7 +20,13 @@ public class Cars {
         this.carsService = carsService;
     }
     @GetMapping(value = "", produces = "application/json")
-    public List<CarDTO> getAllCars() {
+    public List<CarDTO> getAllCarsOrdered(@RequestParam(required = false) String order) {
+        if(order != null) {
+            if(order.equals("sale"))
+                return carsService.findCarsOrderedBySaleDate();
+            else if(order.equals("arrival"))
+                return carsService.findCarsOrderedByArrivalDate();
+        }
         return carsService.findCars();
     }
     @RequestMapping(value = "/{carId}", method = RequestMethod.GET)
@@ -48,6 +54,8 @@ public class Cars {
             carsService.updateCar(carDTO);
         }catch (EntityConsistencyError entityConsistencyError) {
             return ResponseEntity.badRequest().build();
+        }catch (EntityNotFoundException entityNotFoundException) {
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().build();
     }
@@ -57,6 +65,8 @@ public class Cars {
             carsService.deleteCar(carId);
         }catch (EntityNotFoundException entityNotFoundException) {
             return ResponseEntity.notFound().build();
+        }catch(EntityConsistencyError entityConsistencyError) {
+            return  ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok().build();
     }

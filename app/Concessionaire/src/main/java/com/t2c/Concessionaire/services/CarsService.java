@@ -1,15 +1,20 @@
 package com.t2c.Concessionaire.services;
 
 import com.t2c.Concessionaire.dto.CarDTO;
+import com.t2c.Concessionaire.exceptions.BuildException;
 import com.t2c.Concessionaire.exceptions.EntityConsistencyError;
 import com.t2c.Concessionaire.exceptions.EntityNotFoundException;
 import com.t2c.Concessionaire.model.Car;
+import com.t2c.Concessionaire.model.CarComparators.CarArrivalDateComparator;
+import com.t2c.Concessionaire.model.CarComparators.CarSaleDateComparator;
 import com.t2c.Concessionaire.model.Concessionaire;
 import com.t2c.Concessionaire.repositories.CarRepository;
 import com.t2c.Concessionaire.repositories.ConcessionaireRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,11 +30,24 @@ public class CarsService {
     }
     public void createCar(CarDTO carDTO) {
         Car.Builder carBuilder = generateBuilderWithoutId(carDTO);
-        Car createdCar = carBuilder.build();
-        carRepository.create(createdCar);
+        try {
+            Car createdCar = carBuilder.build();
+            carRepository.create(createdCar);
+        }catch(BuildException buildException) {
+            throw new EntityConsistencyError();
+        }
     }
     public void updateCar(CarDTO carDTO) {
-        Car.Builder carBuilder = generateBuilderWithoutId(carDTO);
+        Optional<Car> carOpt = carRepository.findById(carDTO.carId);
+        if(carOpt.isEmpty())
+            throw new EntityNotFoundException();
+        Car carToUpdate = carOpt.get();
+        if(carToUpdate.isSold())
+            throw new EntityConsistencyError();
+        CarDTO updatedCarDTO = new CarDTO(carToUpdate.getCarId(), carToUpdate.getBrand(), carDTO.cost, carDTO.saleDate,
+                carToUpdate.getArrivalDate(), carDTO.sold, carDTO.licensePlate,
+                (carToUpdate.getConcessionaire() != null)?carToUpdate.getConcessionaire().getConcessionaireId():null);
+        Car.Builder carBuilder = generateBuilderWithoutId(updatedCarDTO);
         carBuilder.withId(carDTO.carId);
         Car createdCar = carBuilder.build();
         carRepository.update(createdCar);
@@ -39,6 +57,8 @@ public class CarsService {
         Optional<Car> carOpt = carRepository.findById(carId);
         if(carOpt.isEmpty())
             throw new EntityNotFoundException();
+        if(carOpt.get().isSold())
+            throw new EntityConsistencyError();
         carRepository.delete(carId);
     }
     private Car.Builder generateBuilderWithoutId(CarDTO carDTO) {
@@ -66,6 +86,22 @@ public class CarsService {
     }
     public List<CarDTO> findCars() {
         return carRepository.findAll().stream().map(car -> new CarDTO(car.getCarId(), car.getBrand(), car.getCost(),
+                car.getSaleDate(), car.getArrivalDate(), car.isSold(), car.getLicensePlate(),
+                (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null))
+                .collect(Collectors.toList());
+    }
+    public List<CarDTO> findCarsOrderedByArrivalDate() {
+        List<Car> cars = carRepository.findAll();
+        Collections.sort(cars, new CarArrivalDateComparator());
+        return cars.stream().map(car -> new CarDTO(car.getCarId(), car.getBrand(), car.getCost(),
+                car.getSaleDate(), car.getArrivalDate(), car.isSold(), car.getLicensePlate(),
+                (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null))
+                .collect(Collectors.toList());
+    }
+    public List<CarDTO> findCarsOrderedBySaleDate() {
+        List<Car> cars = carRepository.findAll();
+        Collections.sort(cars, new CarSaleDateComparator());
+        return cars.stream().map(car -> new CarDTO(car.getCarId(), car.getBrand(), car.getCost(),
                 car.getSaleDate(), car.getArrivalDate(), car.isSold(), car.getLicensePlate(),
                 (car.getConcessionaire() != null)? car.getConcessionaire().getConcessionaireId(): null))
                 .collect(Collectors.toList());
