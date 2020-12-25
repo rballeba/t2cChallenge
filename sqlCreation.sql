@@ -12,7 +12,7 @@ CREATE TABLE cars (
     sold boolean not null,
     licensePlate text,
     concessionaireId integer,
-    constraint fk_concessionaire_id foreign key (concessionaireId) references concessionaires (concessionaireId)
+    constraint fk_concessionaire_id foreign key (concessionaireId) references concessionaires (concessionaireId) on delete set null
 );
 
 

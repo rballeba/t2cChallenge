@@ -18,7 +18,7 @@ public class Concessionaire {
         return address;
     }
 
-    private void setConcessionaireId(int concessionaireId) {
+    private void setConcessionaireId(Integer concessionaireId) {
         this.concessionaireId = concessionaireId;
     }
 

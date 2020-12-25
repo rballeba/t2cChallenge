@@ -1,27 +1,50 @@
 package com.t2c.Concessionaire.repositories;
 
-import com.t2c.Concessionaire.exceptions.DatabaseConsistencyError;
+import com.t2c.Concessionaire.exceptions.DatabaseConsistencyException;
 import com.t2c.Concessionaire.model.Car;
+import com.t2c.Concessionaire.model.Concessionaire;
+import com.t2c.Concessionaire.repositories.mappers.CarMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class CarRepository {
     private NamedParameterJdbcTemplate namedJdbcTemplate;
-
+    private CarMapper carMapper;
     @Autowired
-    public CarRepository(DataSource dataSource) {
+    public CarRepository(DataSource dataSource, CarMapper carMapper) {
         setDataSource(dataSource);
+        this.carMapper = carMapper;
     }
 
     private void setDataSource(DataSource dataSource) {
         namedJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+    }
+
+    public List<Car> findAll() {
+        String sql = "SELECT * FROM cars LEFT JOIN concessionaires ON concessionaires.concessionaireId = cars.concessionaireId";
+        return namedJdbcTemplate.query(sql, carMapper);
+    }
+    public Optional<Car> findById(int carId) {
+        String sql = "SELECT * FROM cars LEFT JOIN concessionaires ON concessionaires.concessionaireId = cars.concessionaireId " +
+                "WHERE cars.carId = :carId";
+        Map<String, Object> argMap = new HashMap<>();
+        argMap.put("carId", carId);
+        try {
+            Car car = namedJdbcTemplate.queryForObject(sql, argMap, carMapper);
+            return Optional.ofNullable(car);
+        }catch (EmptyResultDataAccessException notFoundValue) {
+            return Optional.empty();
+        }
     }
 
     public void create(Car newCar) {
@@ -58,7 +81,7 @@ public class CarRepository {
 
         int numberOfRowsAffected = namedJdbcTemplate.update(sql, argMap);
         if(numberOfRowsAffected != 1)
-            throw new DatabaseConsistencyError();
+            throw new DatabaseConsistencyException();
     }
     @Transactional(rollbackFor = Exception.class)
     public void delete(int carId) {
@@ -67,6 +90,6 @@ public class CarRepository {
         argMap.put("carId", carId);
         int numberOfRowsAffected = namedJdbcTemplate.update(sql, argMap);
         if(numberOfRowsAffected != 1)
-            throw new DatabaseConsistencyError();
+            throw new DatabaseConsistencyException();
     }
 }
