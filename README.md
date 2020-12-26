@@ -42,9 +42,139 @@ Es importante destacar que a día de la entrega hay un error sutil en las fechas
 
 Por otra parte, otro trabajo a realizar es la separación de la lógica y de la implementación programando basado en interfaces. Como véis solo hay clases en nuestro proyecto, aunque en mi forma diaria de programar (con algo más de tiempo) todas las clases que no fuesen contenedores de datos y que tuviesen algún tipo de funcionalidad estarían tipadas en una interfaz y todas las clases dependerían de la interfaz. No lo he hecho aquí debido a que me parecía prioritario implementar Dependency Injection (que ha quedado implementado) con beans y no tenía claro como asociarlos a interfaces en vez de a servicios (aunque es realizable, ya que en mi proyecto anterior estaba configurado de esta manera con módulos de Google Guice). 
 
-Por último, otro trabajo a realizar en la arquitectura hexagonal presentada sería separar los DTO (data transfer object) en función de la capa en la que nos encontramos (estoy usando indistintamente los DTOs para la capa de endpoint como para la capa de negocio porque en este caso me ahorraba tiempo, pero considero que es mejor tener objetos por separado para no acoplar la entrada de datos a la lógica de negocio). (De hecho, otro cambio sería usar un DTO propio para la actualización, y no un único car, que puede llevar a confusión, pero necesitaba más refinamiento y por tanto era complejo en el tiempo dado).
+Además, otro trabajo a realizar en la arquitectura hexagonal presentada sería separar los DTO (data transfer object) en función de la capa en la que nos encontramos (estoy usando indistintamente los DTOs para la capa de endpoint como para la capa de negocio porque en este caso me ahorraba tiempo, pero considero que es mejor tener objetos por separado para no acoplar la entrada de datos a la lógica de negocio). (De hecho, otro cambio sería usar un DTO propio para la actualización, y no un único car, que puede llevar a confusión, pero necesitaba más refinamiento y por tanto era complejo en el tiempo dado).
+
+Por último, no he realizado tests end2end ya que no conocía la mejor manera para hacerlo en Java (los suelo realizar con Cypress), así que he preferido realizar unit tests (no demasiados, pruebas de concepto importantes, pero desde luego debería estar más testeado).
+
+PD: Otro apunte interesante para realizar mejoras es el hecho de devolver errores descriptivos. Por ahora solo devuelve errores HTTP sin ningún tipo de contenido en la respuesta.
 
 ## API
 Se ha intentado implementar una API Rest lo más pura posible con los siguientes métodos (que cumplen las restricciones del enunciado).
 
+Resource: Cars
 
+    GET http://localhost:8080/cars
+
+Devuelve una lista con todos los coches.
+
+    GET http://localhost:8080/cars?order=arrival
+Devuelve una lista con todos los coches ordenados por fecha de llegada (primero los más recientes)    
+   
+
+    GET http://localhost:8080/cars?order=sale
+
+
+    GET http://localhost:8080/cars/<carId:int>
+    RESPONSE EXAMPLE:
+    {
+        "carId": 1,
+        "brand": "Ferrari",
+        "cost": 1250,
+        "saleDate": "2010-08-18 10:00:00",
+        "arrivalDate": "2028-08-18 10:00:00",
+        "sold": false,
+        "licensePlate": "4xxde",
+        "concessionaireId": null,
+        "price": 3000
+    }
+
+Devuelve todos los detalles de un coche.
+
+Devuelve una lista con todos los coches ordenados por fecha de venta (primero los más recientes o los que no se han vendido)    
+
+
+    POST http://localhost:8080/cars
+	Content-Type: application/json
+	BODY EXAMPLE
+    {
+        "brand": "Ferrari",
+        "cost": 1250,
+        "saleDate": "2010-08-19 10:00:00",
+        "arrivalDate": "2028-08-19 10:00:00",
+        "sold": false,
+        "licensePlate": "4xxde",
+        "concessionaireId": null,
+        "price": 3000
+    }
+Crea un coche. Todos los campos son obligatorios y no NULL excepto saleDate, licensePlate, concessionaireId, y price.
+
+   
+
+    PUT  http://localhost:8080/cars/<carId:Int>
+   	Content-Type: application/json
+   	BODY EXAMPLE
+    {
+		"saleDate": "2022-12-12 11:04:03 CEST",
+		"sold": true,
+		"licensePlate": "12345CDE",
+		"price": 543211
+	}
+Actualiza el coche con id `<carId>` siempre que se cumplan las condiciones del enunciado (el coche no está vendido).
+
+
+    DELETE http://localhost:8080/cars/<carId:int>
+
+Borra un coche siempre que se cumplan las condiciones del enunciado (el coche no está vendido).
+
+Resource: Concessionaires
+
+    GET http://localhost:8080/concessionaires
+
+Devuelve una lista con todos los concesionarios.
+
+
+    GET http://localhost:8080/concessionaires/<concessionaireId: int>
+    BODY EXAMPLE:
+    {
+    "concessionaireId": 1,
+    "address": "Ramon y cajal"
+	}
+
+Devuelve la especificación de un concesionario específico.
+
+
+    GET http://localhost:8080/concessionaires/<concessionaireId: int>/benefits
+
+Devuelve los beneficios para un concesionario (ver API de resource beneficios)
+
+
+    DELETE http://localhost:8080/concessionaires/<concessionaireId: int>
+
+Borra el concesionario con la ID asociada.
+
+Resource: Benefits
+
+    GET http://localhost:8080/benefits
+    RESPONSE EXAMPLE
+    {
+    "transactions": [
+        {
+            "buyDate": "2028-08-18 10:00:00",
+            "saleDate": "2022-12-11 11:00:00",
+            "buyPrice": 1250,
+            "salePrice": 543211,
+            "benefit": 541961
+        },...
+    ],
+    "overallBenefit": 541961
+}
+ Devuelve un reporte de beneficios con transacciones realizadas, beneficio por transacción y beneficio general. El beneficio de una transacción es salePrice-buyPrice. Si el coche no se ha vendido salePrice = 0. Beneficios negativos significa pérdida de dinero.
+ 
+     GET http://localhost:8080/benefits?concessionaireId=<concessionaireId:int>
+    RESPONSE EXAMPLE
+    {
+    "transactions": [
+        {
+            "buyDate": "2028-08-18 10:00:00",
+            "saleDate": "2022-12-11 11:00:00",
+            "buyPrice": 1250,
+            "salePrice": 543211,
+            "benefit": 541961
+        },...
+    ],
+    "overallBenefit": 541961
+	}
+Devuelve los beneficios para un concesionario dado.
+
+## Otros
+JDBC se ha elegido por delante de entidades para no acoplar el modelo de la base de datos con el modelo del programa, que en proyectos pequeños está muy relacionado pero que a la larga fomenta la creación de monolitos, además de otras antiprácticas, como modelos de dominio anémicos, entre otros.
