@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-@Service //TODO change for the correct TAG
+@Service
 public class CarMapper implements RowMapper<Car> {
     @Override
     public Car mapRow(ResultSet resultSet, int numRow) throws SQLException {

@@ -5,6 +5,8 @@ import java.util.Date;
 public class Transaction {
     private Date buyDate;
     private Date saleDate;
+    private double buyPrice;
+    private Double salePrice;
 
     public Date getBuyDate() {
         return buyDate;
@@ -18,13 +20,10 @@ public class Transaction {
         return buyPrice;
     }
 
-    public double getSalePrice() {
+    public Double getSalePrice() {
         return salePrice;
     }
-
-    private double buyPrice;
-    private double salePrice;
-    public Transaction(Date buyDate, Date saleDate, double buyPrice, double salePrice) {
+    public Transaction(Date buyDate, Date saleDate, double buyPrice, Double salePrice) {
         this.buyDate = buyDate;
         this.saleDate = saleDate;
         this.buyPrice = buyPrice;
@@ -32,7 +31,7 @@ public class Transaction {
     }
     public double computeTransactionBenefit() {
         double benefits = 0;
-        if(this.saleDate != null)
+        if(this.saleDate != null && this.salePrice != null)
             benefits = this.salePrice;
         return benefits - this.buyPrice;
     }

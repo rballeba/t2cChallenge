@@ -72,19 +72,14 @@ public class CarRepository {
     @Transactional(rollbackFor = Exception.class)
     public void update(Car updatedCar) {
         String sql = "UPDATE cars SET " +
-                "brand = :brand, cost = :cost, saleDate = :saleDate, arrivalDate = :arrivalDate," +
-                "sold = :sold, licensePlate = :licensePlate, concessionaireId = :concessionaireId " +
+                "saleDate = :saleDate, " +
+                "sold = :sold, licensePlate = :licensePlate, " +
                 "price = :price WHERE carId = :carId";
         Map<String, Object> argMap = new HashMap<>();
-        argMap.put("brand", updatedCar.getBrand());
-        argMap.put("cost", updatedCar.getCost());
         argMap.put("saleDate", updatedCar.getSaleDate());
-        argMap.put("arrivalDate", updatedCar.getArrivalDate());
         argMap.put("sold", updatedCar.isSold());
         argMap.put("licensePlate", updatedCar.getLicensePlate());
         argMap.put("price", updatedCar.getPrice());
-        Integer concessionaireId = (updatedCar.getConcessionaire() == null)? null: updatedCar.getConcessionaire().getConcessionaireId();
-        argMap.put("concessionaireId", concessionaireId);
         argMap.put("carId", updatedCar.getCarId());
 
         int numberOfRowsAffected = namedJdbcTemplate.update(sql, argMap);

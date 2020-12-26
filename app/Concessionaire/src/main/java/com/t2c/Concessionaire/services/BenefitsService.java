@@ -37,7 +37,7 @@ public class BenefitsService {
     }
     private ReportDTO generateReportFromCars(List<Car> cars) {
         List<Transaction> transactionsDone = cars.stream().map(car -> new Transaction(car.getArrivalDate(),
-                car.getSaleDate(), car.getCost(), car.getPrice())).collect(Collectors.toList());
+                (car.isSold())?car.getSaleDate():null, car.getCost(), car.getPrice())).collect(Collectors.toList());
         Benefits benefits = new Benefits(transactionsDone);
         return benefits.generateReport();
     }

@@ -15,10 +15,10 @@ public class TransactionDTO {
     @JsonProperty("buyPrice")
     private double buyPrice;
     @JsonProperty("salePrice")
-    private double salePrice;
+    private Double salePrice;
     @JsonProperty("benefit")
     private double benefit;
-    public TransactionDTO(Date buyDate, Date saleDate, double buyPrice, double salePrice, double benefit) {
+    public TransactionDTO(Date buyDate, Date saleDate, double buyPrice, Double salePrice, double benefit) {
         this.buyDate = buyDate;
         this.saleDate = saleDate;
         this.buyPrice = buyPrice;

@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,10 +43,10 @@ public class CarsService {
         Car carToUpdate = carOpt.get();
         if(carToUpdate.isSold())
             throw new EntityConsistencyError();
-        CarDTO updatedCarDTO = new CarDTO(carToUpdate.getCarId(), carToUpdate.getBrand(), carDTO.cost, carDTO.saleDate,
-                carToUpdate.getArrivalDate(), carDTO.sold, carDTO.licensePlate,
+        CarDTO updatedCarDTO = new CarDTO(carToUpdate.getCarId(), carToUpdate.getBrand(), carToUpdate.getCost(),
+                carDTO.saleDate, carToUpdate.getArrivalDate(), carDTO.sold, carDTO.licensePlate,
                 (carToUpdate.getConcessionaire() != null)?carToUpdate.getConcessionaire().getConcessionaireId():null,
-                carToUpdate.getPrice());
+                carDTO.price);
         Car.Builder carBuilder = generateBuilderWithoutId(updatedCarDTO);
         carBuilder.withId(carDTO.carId);
         Car createdCar = carBuilder.build();
@@ -76,6 +75,8 @@ public class CarsService {
                 throw new EntityConsistencyError();
             carBuilder.withConcessionaire(concessionaireOpt.get());
         }
+        if(carDTO.price != null)
+            carBuilder.withPrice(carDTO.price);
         return carBuilder;
     }
     public Optional<CarDTO> findCarById(int carId) {

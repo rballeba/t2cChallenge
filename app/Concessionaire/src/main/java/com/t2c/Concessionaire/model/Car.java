@@ -57,7 +57,7 @@ public class Car {
     }
 
     private void setPrice(Double price) {
-        if(price < 0)
+        if(price != null && price < 0)
             throw new NotSupportedDataException("The price can not be negative");
         this.price = price;
     }
