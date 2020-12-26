@@ -1,3 +1,5 @@
+\connect concessionaire
+
 CREATE TABLE concessionaires (
     concessionaireId serial primary key,
     address text unique not null

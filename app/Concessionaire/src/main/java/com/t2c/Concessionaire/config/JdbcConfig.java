@@ -18,6 +18,7 @@ public class JdbcConfig {
         Properties props = new Properties();
         props.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
         props.setProperty("dataSource.user", "cars");
+        props.setProperty("dataSource.portNumber", "7432");
         props.setProperty("dataSource.password", "cars");
         props.setProperty("dataSource.databaseName", "concessionaire");
         HikariConfig config = new HikariConfig(props);
